@@ -4,16 +4,26 @@
 
 import pandas as pd
 import geopandas as gpd
+from shapely.geometry import Point
 import folium
 
-#create point feature from Historic Gravity data csv
-df = pd.read_csv('Ulst6Jan87.csv')
+# ---------------------------------------------------------------------------------------------------------------------
+# Preparation of source data
+# ---------------------------------------------------------------------------------------------------------------------
 
-Historic_Gravity = gpd.GeoDataFrame(df[['id', 'OBS (mgal)']], # Only display the ID for each point along with the gravity value in Milligal
-                            geometry=gpd.points_from_xy(df['LONG'], df['']), # set the geometry using points_from_xy
-                            crs='epsg:4326') # set CRS as WGS84 lat/lon
+df = pd.read_csv('Ulst6Jan87.csv') #historic gravity data
+df.head()
+df['geometry'] = list(zip(df['LONG'], df['LAT'])) 
+df['geometry'] = df['geometry'].apply(Point) 
+gdf = gpd.GeoDataFrame(df)
+gdf = gdf.set_crs("EPSG:4326") 
+#gdf.to_file('HistoricGravityPoints.shp') #Creates .shp for use in ArcPro etc
 
-AbsoluteGravity= gpd.GeoDataFrame(df[['id', 'OBS (mgal)']], # Only display the ID for each point along with the gravity value in Milligal
-    geometry=gpd.points_from_xy(df['Easting'], df['Northing']), # set the geometry using points_from_xy
-    gdf = GeoDataFrame(df, geometry=geometry, crs= 29903) #data is Irish Grid
-    gdf = gdf.to_crs(4326) # change CRS to WGS84 lat/lon
+df = pd.read_csv('OSNIAbsoluteGravity.csv')
+del df['Easting.1'], df['Northing.1'], df['Unnamed: 8'], df['latitude'], df ['longitude'] #Removal of superflous coloumns
+df['geometry'] = list(zip(df['Easting'], df['Northing'])) 
+df['geometry'] = df['geometry'].apply(Point) 
+gdf = gpd.GeoDataFrame(df)
+gdf = gdf.set_crs("EPSG:2157") #Source data is Irish Transverse Mercator, this needs set before we can transform to WGS84
+gdf = gdf.to_crs("EPSG:4326") #Transformation to WGS84 for interoperability (https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoDataFrame.to_crs.html)
+#gdf.to_file('AbsoluteGravityPoints.shp') #Creates .shp for use in ArcPro etc
