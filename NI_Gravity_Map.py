@@ -16,7 +16,7 @@ Historic_Gravity = gpd.GeoDataFrame(df[['id', 'OBS (mgal)']], # Only display the
 #create point feature from Absolute Gravity data csv
 df = pd.read_csv('OSNI Absolute Gravity Station Coords + Heights.csv')
 
-#Lat long to decimal
+#Lat long to decimal (this was a PITA, for me anyway!)
 df['Lat'] = df['latitude']
 N = 'N' in latitude
 d, m, s = map(float, latitude[:-1].split('-'))
