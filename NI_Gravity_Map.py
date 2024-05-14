@@ -16,7 +16,20 @@ Historic_Gravity = gpd.GeoDataFrame(df[['id', 'OBS (mgal)']], # Only display the
 #create point feature from Absolute Gravity data csv
 df = pd.read_csv('OSNIAbsoluteGravity.csv')
 
-#Lat long to decimal (this was a PITA, for me anyway!)
+Historic_Gravity = gpd.GeoDataFrame(df[['id', 'OBS (mgal)']], # Only display the ID for each point along with the gravity value in Milligal
+                            geometry=gpd.points_from_xy(df['LONG'], df['']), # set the geometry using points_from_xy
+                            crs='epsg:4326') # set CRS as WGS84 lat/lon
+
+AbsoluteGravity= gpd.GeoDataFrame(df[['Station Name']], # Only display the Station Name
+                          geometry=gpd.points_from_xy(df['Easting'], df['Northing']), # set the geometry using points_from_xy
+                          gdf = GeoDataFrame(df, geometry=geometry, crs= 29903) #data is Irish Grid
+                          gdf = gdf.to_crs(4326) # change CRS to WGS84 lat/lon
+
+AbsoluteGravity = gpd.GeoDataFrame(df[['name', 'website']], # use the csv data, but only the name/website columns
+                            geometry=gpd.points_from_xy(df['lon'], df['lat']), # set the geometry using points_from_xy
+                            crs='epsg:4326') # set the CRS using a text representation of the EPSG code for WGS84 lat/lon
+
+#Lat long to decimal (this was tun)
 
 df['Lat'] = df['latitude'] # I wanted to retain the original data
 df['Long'] = df['longitude'] # As above
