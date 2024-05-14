@@ -14,10 +14,17 @@ Historic_Gravity = gpd.GeoDataFrame(df[['id', 'OBS (mgal)']], # Only display the
                             crs='epsg:4326') # set CRS as WGS84 lat/lon
 
 #create point feature from Absolute Gravity data csv
-df = pd.read_csv('OSNI Absolute Gravity Station Coords + Heights.csv')
+df = pd.read_csv('OSNIAbsoluteGravity.csv')
 
 #Lat long to decimal (this was a PITA, for me anyway!)
-df['Lat'] = df['latitude']
+
+df['Lat'] = df['latitude'] # I wanted to retain the original data
+df['Long'] = df['longitude'] # As above
+
+latitude = ""
+latitude = sum(float(x) / 60 ** n for n, x in enumerate(latitude[:-1].split('-')))  * (1 if 'N' in latitude[-1] else -1)
+longitude = sum(float(x) / 60 ** n for n, x in enumerate(longitude[:-1].split('-'))) * (1 if 'E' in longitude[-1] else -1)
+
 N = 'N' in latitude
 d, m, s = map(float, latitude[:-1].split('-'))
 latitude = (d + m / 60. + s / 3600.) * (1 if N else -1)
